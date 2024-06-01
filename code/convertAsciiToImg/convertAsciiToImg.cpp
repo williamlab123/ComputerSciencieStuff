@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const char *filename = "img0.foo";
+const char *filename = "img1.foo";
 
 void readFile(const string &GRAY_SCALE)
 {
@@ -28,21 +28,35 @@ void readFile(const string &GRAY_SCALE)
     int size = f.tellg();
     f.seekg(0, ios::beg);
 
-    char *bytes = new char[size];
+    unsigned char *bytes = new unsigned char[size];
 
-    // read each byte and store into the array
-    f.read(bytes, size);
+    // reads each byte and store them  into the array
+    f.read(reinterpret_cast<char *>(bytes), size);
+
+    cout << "showing the first 50 bytes\n";
+
+    // cout << bytes[0] << endl;
+    // cout << bytes[1] << endl;
+    // cout << bytes[2] << endl;
+    for (int i = 0; i < 5000; i++)
+    {
+        int decimal = static_cast<unsigned int>(bytes[i]);
+        // bitset<8> binary(bytes[i]);
+        decimal /= 70;
+        cout << GRAY_SCALE[decimal];
+        // cout << " Decimal: " << decimal << '\n';
+    }
 
     ofstream outFile("output.foo2");
 
     // convert the pixel values to ASCII and write to the file
     // i think the problem is in this part, improve this conversion will
     // make it work
-    
+
     for (int i = 0; i < size; i++)
     {
         int pixelValue = static_cast<int>(bytes[i]);
-        int index = pixelValue / 7 % GRAY_SCALE.length();
+        int index = pixelValue / 7.3f; 
         outFile << GRAY_SCALE[index];
     }
 
@@ -53,7 +67,7 @@ void readFile(const string &GRAY_SCALE)
 
 int main()
 {
-    const string GRAY_SCALE = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,\"^`'.";
+    const string GRAY_SCALE = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,\"^`'."; // 70
     readFile(GRAY_SCALE);
     return 0;
 }
