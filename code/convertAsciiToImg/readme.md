@@ -3,7 +3,7 @@
 ### Example
 
 ### Original Image
-![Alt text](image-1.png)
+![Alt text](image.png)
 
 ### After run
 ![Alt text](image.png)
