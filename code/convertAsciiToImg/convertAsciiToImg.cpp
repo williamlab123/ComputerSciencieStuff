@@ -4,70 +4,67 @@
 
 using namespace std;
 
-const char *filename = "img1.foo";
-
-void readFile(const string &GRAY_SCALE)
+// william 2076937
+// carlos eduardo 2257845
+// prints the error and exits the program
+void printErrror(string error)
 {
-    int width, height;
-    fstream f(filename, ios::in | ios::binary);
-    if (!f)
-    {
-        cerr << "Failed to open file\n";
-        return;
-    }
-
-    // gets the width and height from the input image
-    f.read(reinterpret_cast<char *>(&width), sizeof(width));
-    f.read(reinterpret_cast<char *>(&height), sizeof(height));
-
-    cout << "WIDTH " << width << endl;
-    cout << "HEIGHT " << height << endl;
-
-    // gets the size of the file
-    f.seekg(0, ios::end);
-    int size = f.tellg();
-    f.seekg(0, ios::beg);
-
-    unsigned char *bytes = new unsigned char[size];
-
-    // reads each byte and store them  into the array
-    f.read(reinterpret_cast<char *>(bytes), size);
-
-    cout << "showing the first 50 bytes\n";
-
-    // cout << bytes[0] << endl;
-    // cout << bytes[1] << endl;
-    // cout << bytes[2] << endl;
-    for (int i = 0; i < 5000; i++)
-    {
-        int decimal = static_cast<unsigned int>(bytes[i]);
-        // bitset<8> binary(bytes[i]);
-        decimal /= 70;
-        cout << GRAY_SCALE[decimal];
-        // cout << " Decimal: " << decimal << '\n';
-    }
-
-    ofstream outFile("output.foo2");
-
-    // convert the pixel values to ASCII and write to the file
-    // i think the problem is in this part, improve this conversion will
-    // make it work
-
-    for (int i = 0; i < size; i++)
-    {
-        int pixelValue = static_cast<int>(bytes[i]);
-        int index = pixelValue / 7.3f; 
-        outFile << GRAY_SCALE[index];
-    }
-
-    outFile.close();
-
-    delete[] bytes;
+    cerr << error << endl;
+    exit(-1);
 }
 
-int main()
+/*
+  reads the file (an input.foo) byte by byte and writes the output to a file (an output.foo2)
+  @Params{const char *fileName, const char *outName, const string &GRAY_SCALE}
+*/
+void readFile(const char *fileName, const char *outName, const string &GRAY_SCALE)
+{
+    int width, height;
+    ofstream of(outName);
+
+    int pCount = width * height;
+    unsigned char *ps = new unsigned char[pCount];
+
+    ifstream inputFile(fileName, ios::binary);
+    
+    if (!inputFile)
+        printErrror("couldn't open the file, please run again");
+
+    inputFile >> width >> height;
+
+    inputFile.read(reinterpret_cast<char *>(ps), pCount);
+
+    inputFile.close();
+
+    of << width << ' ' << height << '\n';
+
+    // for collums
+    for (int i = 0; i < height; i++)
+    {
+        // for rows
+        for (int j = 0; j < width; j++)
+        {
+            int index = i * width + j;
+            unsigned char p = ps[index];
+            of << GRAY_SCALE[p * GRAY_SCALE.length() / 550]; // 550 is the best value i found for the gray scale
+                                                             // smaller values like 400 or grater like 600 makes
+                                                             // the image looks saturated
+        }
+        of << '\n';
+    }
+
+    of.close();
+    cout << "width: " << width << ", height: " << height << '\n';
+    delete[] ps;
+}
+
+int main(int argc, char **argv)
 {
     const string GRAY_SCALE = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,\"^`'."; // 70
-    readFile(GRAY_SCALE);
+
+    const char *fileName = argv[1];
+
+    const char *outName = argv[2];
+    readFile(fileName, outName, GRAY_SCALE);
     return 0;
 }
