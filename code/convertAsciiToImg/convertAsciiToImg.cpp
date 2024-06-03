@@ -4,8 +4,11 @@
 
 using namespace std;
 
-// william 2076937
-// carlos eduardo 2257845
+/*
+  Usage - run the the code and pass as parameter an img (in binary).
+  This code will output the same image in ascii art
+*/
+
 // prints the error and exits the program
 void printErrror(string error)
 {
@@ -26,7 +29,7 @@ void readFile(const char *fileName, const char *outName, const string &GRAY_SCAL
     unsigned char *ps = new unsigned char[pCount];
 
     ifstream inputFile(fileName, ios::binary);
-    
+
     if (!inputFile)
         printErrror("couldn't open the file, please run again");
 
